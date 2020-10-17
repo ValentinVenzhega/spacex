@@ -1,24 +1,43 @@
-import React from 'react';
-
+import React, {useState, useEffect} from 'react';
+import {useHistory} from 'react-router-dom';
+import useLaunches from '../useLaunches/useLaunches';
 import './details.css';
+import Main from '../Main/Main';
+import YouTube from 'react-youtube';
 
-const Details = () => (
-   <main class="details">
-		<div class="container">
-			<div class="details-row">
-				<div class="details-image">
-					<img src="https://images2.imgbox.com/3c/0e/T8iJcSN3_o.png" alt=""/>
+const Details = (props) => {
+
+	const [launch, setLaunch] = useState(null)
+	const { getLaunch } = useLaunches();
+
+	useEffect(() => {
+		setLaunch(getLaunch(props.match.params.id));
+	}, [getLaunch])
+	
+
+	const history = useHistory();
+
+	if (!launch) return <div>загрузка...</div>
+
+	return(
+		<div>
+			<Main name={launch.name}/>
+			<main class="details">
+				<div class="container">
+					<div class="details-row">
+						<div class="details-image">
+							<img src={launch.links.patch.small} alt={launch.main} />
+						</div>
+						<div class="details-content">
+							<p class="details-description">{launch.details}</p>
+						</div>
+					</div>
+					<YouTube className='details-youtube' videoId={launch.links.youtube_id} />
 				</div>
-				<div class="details-content">
-					<p class="details-description">Engine failure at 33 seconds and loss of vehicle</p>
-				</div>
-			</div>
-			<div>
-				<iframe class="details-youtube" width="560" height="315" src="https://www.youtube.com/embed/dLQ2tZEH6G0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen/>
-			</div>
+				<a onClick={history.goBack} class="button button-back">go back</a>
+			</main>
 		</div>
-		<a href="calendar.html" class="button button-back">go back</a>
-	</main>
-);
+	);
+};
 
 export default Details;
